@@ -1,16 +1,10 @@
 // using spread operator
 function runWithDebugger(callback, options) {
   debugger;
-  if (options !== undefined) {
+  if (options !== undefined && Array.isArray(options)) {
     callback(...options);
-  }
-}
-
-// using arguments variable
-function runWithDebugger(callback) {
-  debugger;
-  if (arguments.length === 2) {
-    callback.apply(null, arguments[1]);
+  } else {
+    callback();
   }
 }
 
