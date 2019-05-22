@@ -60,7 +60,7 @@ jQuery(function ($) {
 				.on('change', '.toggle', this.toggle.bind(this))
 				.on('dblclick', 'label', this.editingMode.bind(this))
 				.on('keyup', '.edit', this.editKeyup.bind(this))
-				.on('focusout', '.edit', this.update.bind(this))
+				.on('focusout', '.edit', this.editAction.bind(this))
 				.on('click', '.destroy', this.destroy.bind(this));
 		},
 		// view methods, displaying contents on the screen
@@ -187,7 +187,8 @@ jQuery(function ($) {
 				$(e.target).data('abort', true).blur();
 			}
 		},
-		update: function (e) {
+    // 3 possible outcomes: abort action, delete todo & update todo.title
+		editAction: function (e) {
 			var el = e.target;
 			var $el = $(el);
 			var val = $el.val().trim();
