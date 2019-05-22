@@ -48,7 +48,7 @@ jQuery(function ($) {
       new Router({
 				'/:filter': function (filter) {
 					this.filter = filter;
-					this.render(this.getFilteredTodos());
+					this.render();
 				}.bind(this)
 			}).init('/all');      
 		},
@@ -64,7 +64,8 @@ jQuery(function ($) {
 				.on('click', '.destroy', this.destroy.bind(this));
 		},
 		// view methods, displaying contents on the screen
-		render: function (todos) {
+		render: function () {
+      var todos = this.getFilteredTodos();
 			$('#todo-list').html(this.todoTemplate(todos));
 			$('#main').toggle(todos.length > 0);
       $('#toggle-all').prop('checked', this.getActiveTodos().length === 0);
@@ -83,7 +84,7 @@ jQuery(function ($) {
 
 			$('#footer').toggle(todoCount > 0).html(template);
 		},
-		// utility methods filtering todos and extracting todo from todos
+		// methods filtering todos
 		getActiveTodos: function () {      
 			return this.todos.filter(function (todo) {
 				return !todo.completed;
@@ -105,6 +106,7 @@ jQuery(function ($) {
 
 			return this.todos;
 		},
+    // extracting todo from todos by its 'id'
 		// accepts an element from inside the `.item` div and
 		// returns the corresponding index in the `todos` array
 		indexFromEl: function (el) {
@@ -119,10 +121,11 @@ jQuery(function ($) {
 			}
 		},
 		// controller methods
+    // all of them updating data and view
 		toggle: function (e) {
 			var i = this.indexFromEl(e.target);
 			this.todos[i].completed = !this.todos[i].completed;
-			this.render(this.getFilteredTodos());
+			this.render();
       util.store('todos-jquery', this.todos);
 		},
 		toggleAll: function (e) {
@@ -132,17 +135,17 @@ jQuery(function ($) {
 				todo.completed = isChecked;
 			});
 
-			this.render(this.getFilteredTodos());
+			this.render();
       util.store('todos-jquery', this.todos);
 		},
 		destroy: function (e) {
 			this.todos.splice(this.indexFromEl(e.target), 1);
-			this.render(this.getFilteredTodos());
+			this.render();
       util.store('todos-jquery', this.todos);
 		},
 		destroyCompleted: function () {
 			this.todos = this.getActiveTodos();
-			this.render(this.getFilteredTodos());
+			this.render();
       util.store('todos-jquery', this.todos);
 		},
 		// creating TODO, including interludes between pressing keys for todo title
@@ -162,10 +165,10 @@ jQuery(function ($) {
 
 			$input.val('');
 
-			this.render(this.getFilteredTodos());
+			this.render();
       util.store('todos-jquery', this.todos);
 		},
-		// update methods
+		// editing methods with only one of them (update) updating data and view
 		editingMode: function (e) {
 			var $input = $(e.target).closest('li').addClass('editing').find('.edit');
 			// puts caret(pointer) at end of input
@@ -198,7 +201,7 @@ jQuery(function ($) {
 			  this.todos[this.indexFromEl(el)].title = val;
 			}
 
-			this.render(this.getFilteredTodos());
+			this.render();
       util.store('todos-jquery', this.todos);
 		}
 	};
