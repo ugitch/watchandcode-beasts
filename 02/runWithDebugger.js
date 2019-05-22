@@ -2,9 +2,9 @@
 function runWithDebugger(callback, options) {
   debugger;
   if (options !== undefined && Array.isArray(options)) {
-    callback(...options);
+    return callback(...options);
   } else {
-    callback();
+    return callback();
   }
 }
 
