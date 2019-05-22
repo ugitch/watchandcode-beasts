@@ -1,10 +1,10 @@
 // using spread operator
-function runWithDebugger(callback, options) {
+function runWithDebugger(callback, argsForCallback) {
   debugger;
-  if (Array.isArray(options)) {
-    return callback(...options);
-  } else if (options !== undefined) {
-    return callback(options);
+  if (Array.isArray(argsForCallback)) {
+    return callback(...argsForCallback);
+  } else if (argsForCallback !== undefined) {
+    return callback(argsForCallback);
   } else {
     return callback();
   }
