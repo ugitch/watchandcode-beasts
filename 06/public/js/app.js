@@ -53,17 +53,16 @@ jQuery(function ($) {
 			}).init('/all');      
 		},
 		bindEvents: function () {
-			$('#new-todo').on('keyup', this.create.bind(this));
-			$('#toggle-all').on('change', this.toggleAll.bind(this));
-			$('#footer').on('click', '#clear-completed', this.destroyCompleted.bind(this));
+			$('#new-todo').on('keyup', handlers.create);
+			$('#toggle-all').on('change', handlers.toggleAll);
+			$('#footer').on('click', '#clear-completed', handlers.destroyCompleted);
 			$('#todo-list')
-				.on('change', '.toggle', this.toggle.bind(this))
-				.on('dblclick', 'label', this.editingMode.bind(this))
-				.on('keyup', '.edit', this.editKeyup.bind(this))
-				.on('focusout', '.edit', this.editAction.bind(this))
-				.on('click', '.destroy', this.destroy.bind(this));
+				.on('change', '.toggle', handlers.toggle)
+				.on('dblclick', 'label', handlers.editingMode)
+				.on('keyup', '.edit', handlers.editKeyup)
+				.on('focusout', '.edit', handlers.editAction)
+				.on('click', '.destroy', handlers.destroy);
 		},
-
     // updating model and view
     //  1) saving data to localStorage
     //  2) view.render for display
@@ -71,140 +70,145 @@ jQuery(function ($) {
       view.render();
       util.store('todos-jquery', this.todos);
     },
+  };
 
-		// methods filtering todos
-		getActiveTodos: function () {      
-			return this.todos.filter(function (todo) {
-				return !todo.completed;
-			});
-		},
-		getCompletedTodos: function () {
-			return this.todos.filter(function (todo) {
-				return todo.completed;
-			});
-		},
-		getFilteredTodos: function () {
-			if (this.filter === 'active') {
-				return this.getActiveTodos();
-			}
-
-			if (this.filter === 'completed') {
-				return this.getCompletedTodos();
-			}
-
-			return this.todos;
-		},
-
-    // extracting todo from todos by its 'id'
-		// accepts an element from inside the `.item` div and
-		// returns the corresponding index in the `todos` array
-		indexFromEl: function (el) {
-			var id = $(el).closest('li').data('id');
-			var todos = this.todos;
-			var i = todos.length;
-
-			while (i--) {
-				if (todos[i].id === id) {
-					return i;
-				}
-			}
-		},
-
-		// controller methods
-    // all of them updating data and view
-		toggle: function (e) {
-			var i = this.indexFromEl(e.target);
-			this.todos[i].completed = !this.todos[i].completed;
-			this.update();
+  var filters = {
+    // methods filtering todos
+    getActiveTodos: function () {      
+      return App.todos.filter(function (todo) {
+        return !todo.completed;
+      });
     },
-		toggleAll: function (e) {
-			var isChecked = $(e.target).prop('checked');
+    getCompletedTodos: function () {
+      return App.todos.filter(function (todo) {
+        return todo.completed;
+      });
+    },
+    getFilteredTodos: function () {
+      if (App.filter === 'active') {
+        return this.getActiveTodos();
+      }
 
-			this.todos.forEach(function (todo) {
-				todo.completed = isChecked;
-			});
+      if (App.filter === 'completed') {
+        return this.getCompletedTodos();
+      }
 
-			this.update();    
-		},
-		destroy: function (e) {
-			this.todos.splice(this.indexFromEl(e.target), 1);
-			this.update();
-		},
-		destroyCompleted: function () {
-			this.todos = this.getActiveTodos();
-			this.update();
-		},
+      return App.todos;
+    },
 
-		// creating TODO, including interludes between pressing keys for todo title
-		create: function (e) {		
-			var $input = $(e.target);
-			var val = $input.val().trim();
+    // in a way, also a filter, this time filtering single todo
+    // extracting todo from todos by its 'id'
+    // accepts an element from inside the `.item` div and
+    // returns the corresponding index in the `todos` array
+    indexFromEl: function (el) {
+      var id = $(el).closest('li').data('id');
+      var todos = App.todos;
+      var i = todos.length;
 
-			if (e.which !== ENTER_KEY || !val) {
-				return;
-			}
+      while (i--) {
+        if (todos[i].id === id) {
+          return i;
+        }
+      }
+    }
+  };
 
-			this.todos.push({
-				id: util.uuid(),
-				title: val,
-				completed: false
-			});
+  // handler methods (controller)
+  // all of them updating data and view
+  var handlers = {
+    toggle: function (e) {
+      var i = filters.indexFromEl(e.target);
+      App.todos[i].completed = !App.todos[i].completed;
+      App.update();
+    },
+    toggleAll: function (e) {
+      var isChecked = $(e.target).prop('checked');
 
-			$input.val('');
+      App.todos.forEach(function (todo) {
+        todo.completed = isChecked;
+      });
 
-			this.update();
-		},
-		// editing methods with only one of them (editAction) updating data and view
-		editingMode: function (e) {
-			var $input = $(e.target).closest('li').addClass('editing').find('.edit');
-			// puts caret(pointer) at end of input
-			var tmpStr = $input.val();
-			$input.val('');
-			$input.val(tmpStr);
+      App.update();    
+    },
+    destroy: function (e) {
+      App.todos.splice(filters.indexFromEl(e.target), 1);
+      App.update();
+    },
+    destroyCompleted: function () {
+      App.todos = filters.getActiveTodos();
+      App.update();
+    },
+
+    // creating TODO, including interludes between pressing keys for todo title
+    create: function (e) {
+      var $input = $(e.target);
+      var val = $input.val().trim();
+
+      if (e.which !== ENTER_KEY || !val) {
+        return;
+      }
+
+      App.todos.push({
+        id: util.uuid(),
+        title: val,
+        completed: false
+      });
+
+      $input.val('');
+
+      App.update();
+    },
+    // editing methods with only one of them (editAction) updating data and view
+    editingMode: function (e) {
+      var $input = $(e.target).closest('li').addClass('editing').find('.edit');
+      // puts caret(pointer) at end of input
+      var tmpStr = $input.val();
+      $input.val('');
+      $input.val(tmpStr);
       $input.focus(); 
     },
-		editKeyup: function (e) {
-			if (e.which === ENTER_KEY) {
-				e.target.blur();
-				return;
-			}
+    editKeyup: function (e) {
+      if (e.which === ENTER_KEY) {
+        e.target.blur();
+        return;
+      }
 
-			if (e.which === ESCAPE_KEY) {
-				$(e.target).data('abort', true).blur();
-			}
-		},
+      if (e.which === ESCAPE_KEY) {
+        $(e.target).data('abort', true).blur();
+      }
+    },
     // 3 possible outcomes: abort action, delete todo & update todo.title
-		editAction: function (e) {
-			var el = e.target;
-			var $el = $(el);
-			var val = $el.val().trim();
+    editAction: function (e) {
+      var el = e.target;
+      var $el = $(el);
+      var val = $el.val().trim();
 
-			if ($el.data('abort')) {
-				$el.data('abort', false);
-			} else if (!val) {
-			  this.destroy(e);
-				return;
-			} else {
-			  this.todos[this.indexFromEl(el)].title = val;
-			}
+      if ($el.data('abort')) {
+        $el.data('abort', false);
+      } else if (!val) {
+        handlers.destroy(e);
+        return;
+      } else {
+        App.todos[filters.indexFromEl(el)].title = val;
+      }
 
-			this.update();
-		}
-	};
+      App.update();
+    }
+  };
 
   // view object, displaying contents on the screen
   var view = {
     render: function () {
-      var todos = App.getFilteredTodos();
+      var todos = filters.getFilteredTodos();
       $('#todo-list').html(App.todoTemplate(todos));
       $('#main').toggle(todos.length > 0);
-      $('#toggle-all').prop('checked', App.getActiveTodos().length === 0);
+      $('#toggle-all').prop('checked', filters.getActiveTodos().length === 0);
       this.renderFooter();
       $('#new-todo').focus();
     },
     renderFooter: function () {
       var todoCount = App.todos.length;
-      var activeTodoCount = App.getActiveTodos().length;
+      var activeTodoCount = filters.getActiveTodos().length;
       var template = App.footerTemplate({
         activeTodoCount: activeTodoCount,
         activeTodoWord: util.pluralize(activeTodoCount, 'item'),
