@@ -168,7 +168,7 @@ jQuery(function ($) {
 			this.render();
       util.store('todos-jquery', this.todos);
 		},
-		// editing methods with only one of them (update) updating data and view
+		// editing methods with only one of them (editAction) updating data and view
 		editingMode: function (e) {
 			var $input = $(e.target).closest('li').addClass('editing').find('.edit');
 			// puts caret(pointer) at end of input
