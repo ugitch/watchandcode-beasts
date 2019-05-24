@@ -1,68 +1,68 @@
 /*global jQuery, Handlebars, Router */
 jQuery(function ($) {
-	'use strict';
+  'use strict';
 
-	Handlebars.registerHelper('eq', function (a, b, options) {
-		if (a === b) return options.fn(this);
-	});
+  Handlebars.registerHelper('eq', function (a, b, options) {
+    if (a === b) return options.fn(this);
+  });
 
-	const ENTER_KEY = 13;
-	const ESCAPE_KEY = 27;
+  const ENTER_KEY = 13;
+  const ESCAPE_KEY = 27;
 
-	var util = {
-		uuid: function () {
-			/*jshint bitwise:false */
-			var i, random;
-			var uuid = '';
+  var util = {
+    uuid: function () {
+      /*jshint bitwise:false */
+      var i, random;
+      var uuid = '';
 
-			for (i = 0; i < 32; i++) {
-				random = Math.random() * 16 | 0;
-				if (i === 8 || i === 12 || i === 16 || i === 20) {
-					uuid += '-';
-				}
-				uuid += (i === 12 ? 4 : (i === 16 ? (random & 3 | 8) : random)).toString(16);
-			}
+      for (i = 0; i < 32; i++) {
+        random = Math.random() * 16 | 0;
+        if (i === 8 || i === 12 || i === 16 || i === 20) {
+          uuid += '-';
+        }
+        uuid += (i === 12 ? 4 : (i === 16 ? (random & 3 | 8) : random)).toString(16);
+      }
 
-			return uuid;
-		},
-		pluralize: function (count, word) {
-			return count === 1 ? word : word + 's';
-		},
-		store: function (namespace, data) {
-			if (arguments.length > 1) {
-				return localStorage.setItem(namespace, JSON.stringify(data));
-			} else {
-				var store = localStorage.getItem(namespace);
-				return (store && JSON.parse(store)) || [];
-			}
-		}
+      return uuid;
+    },
+    pluralize: function (count, word) {
+      return count === 1 ? word : word + 's';
+    },
+    store: function (namespace, data) {
+      if (arguments.length > 1) {
+        return localStorage.setItem(namespace, JSON.stringify(data));
+      } else {
+        var store = localStorage.getItem(namespace);
+        return (store && JSON.parse(store)) || [];
+      }
+    }
 	};
 
-	var App = {
-		init: function () {
-			this.todos = util.store('todos-jquery');
-			this.todoTemplate = Handlebars.compile($('#todo-template').html());
-			this.footerTemplate = Handlebars.compile($('#footer-template').html());
-			this.bindEvents();
+  var App = {
+    init: function () {
+      this.todos = util.store('todos-jquery');
+      this.todoTemplate = Handlebars.compile($('#todo-template').html());
+      this.footerTemplate = Handlebars.compile($('#footer-template').html());
+      this.bindEvents();
 
       new Router({
-				'/:filter': function (filter) {
-					this.filter = filter;
-					view.render();
-				}.bind(this)
-			}).init('/all');      
-		},
-		bindEvents: function () {
-			$('#new-todo').on('keyup', handlers.create);
-			$('#toggle-all').on('change', handlers.toggleAll);
-			$('#footer').on('click', '#clear-completed', handlers.destroyCompleted);
-			$('#todo-list')
-				.on('change', '.toggle', handlers.toggle)
-				.on('dblclick', 'label', handlers.editingMode)
-				.on('keyup', '.edit', handlers.editKeyup)
-				.on('focusout', '.edit', handlers.editAction)
-				.on('click', '.destroy', handlers.destroy);
-		},
+        '/:filter': function (filter) {
+          this.filter = filter;
+          view.render();
+        }.bind(this)
+      }).init('/all');
+    },
+    bindEvents: function () {
+      $('#new-todo').on('keyup', handlers.create);
+      $('#toggle-all').on('change', handlers.toggleAll);
+      $('#footer').on('click', '#clear-completed', handlers.destroyCompleted);
+      $('#todo-list')
+        .on('change', '.toggle', handlers.toggle)
+        .on('dblclick', 'label', handlers.editingMode)
+        .on('keyup', '.edit', handlers.editKeyup)
+        .on('focusout', '.edit', handlers.editAction)
+        .on('click', '.destroy', handlers.destroy);
+    },
     // updating model and view
     //  1) saving data to localStorage
     //  2) view.render for display
