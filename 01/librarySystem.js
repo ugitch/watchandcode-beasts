@@ -18,7 +18,12 @@
 
     // creating a library
     if (arguments.length > 1) {
-      libraryStorage[libraryName] = callback();
+      // map dependencies into their values
+      let dependenciesValues = dependencies.map(function(dependency) {
+        return libraryStorage[dependency];
+      });
+
+      libraryStorage[libraryName] = callback(...dependenciesValues);
     // using library
     } else {
       return libraryStorage[libraryName];
