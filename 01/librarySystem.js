@@ -1,5 +1,5 @@
 // librarySystem; one global variable
-// 1. Create: librarySystem('libraryName', [dependencies] function(...arrayOfDependencies) {/* return library */ });
+// 1. Create: librarySystem('libraryName', [dependencies], function(...arrayOfDependencies) {/* return library */ });
 // 2. Use: librarySystem('libraryName')
 
 (function() {
@@ -19,11 +19,7 @@
     // creating a library
     if (arguments.length > 1) {
       // map dependencies into their values
-      let dependenciesValues = dependencies.map(function(dependency) {
-        return libraryStorage[dependency];
-      });
-
-      libraryStorage[libraryName] = callback(...dependenciesValues);
+      libraryStorage[libraryName] = callback(...dependencies);
     // using library
     } else {
       return libraryStorage[libraryName];
@@ -43,7 +39,7 @@ librarySystem('company', [], function() {
 });
 
 librarySystem('workBlurb', ['name', 'company'], function(name, company) {
-  return name + ' works at ' + company;
+  return librarySystem(name) + ' works at ' + librarySystem(company);
 });
 
 librarySystem('workBlurb'); // 'Gordon works at Watch and Code'
