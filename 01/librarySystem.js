@@ -1,5 +1,5 @@
 // librarySystem; one global variable
-// 1. Create: librarySystem('libraryName', function() {/* return library */ });
+// 1. Create: librarySystem('libraryName', [dependencies] function(...arrayOfDependencies) {/* return library */ });
 // 2. Use: librarySystem('libraryName')
 
 (function() {
