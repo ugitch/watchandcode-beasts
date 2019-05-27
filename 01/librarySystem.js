@@ -18,7 +18,6 @@
 
     // creating a library
     if (arguments.length > 1) {
-      // map dependencies into their values
       libraryStorage[libraryName] = callback(...dependencies);
     // using library
     } else {
