@@ -3,22 +3,17 @@
 // 2. Use: librarySystem('libraryName')
 
 (function() {
-
-  var libraryStorage = {};
+  'use strict';
+  const libraryStorage = {};
   
   function librarySystem(libraryName, dependencies, callback) {
-  //  check dependencies
-    if (dependencies && dependencies.length > 0) {
-      for (let i = 0 ; i < dependencies.length; i++) {
-        if (!(libraryStorage[dependencies[i]])) {
-          return;
-        }
-      }
-    }
-
     // creating a library
     if (arguments.length > 1) {
-      libraryStorage[libraryName] = callback(...dependencies);
+      let libraryDependencies = dependencies.map(function (dependency) {
+        return libraryStorage[dependency];
+      });
+        
+      libraryStorage[libraryName] = callback(...libraryDependencies);
     // using library
     } else {
       return libraryStorage[libraryName];
@@ -38,7 +33,7 @@ librarySystem('company', [], function() {
 });
 
 librarySystem('workBlurb', ['name', 'company'], function(name, company) {
-  return librarySystem(name) + ' works at ' + librarySystem(company);
+  return name + ' works at ' + company;
 });
 
 librarySystem('workBlurb'); // 'Gordon works at Watch and Code'
