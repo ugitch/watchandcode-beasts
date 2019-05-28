@@ -11,6 +11,7 @@
     // recursive case
     if (arguments.length > 1) {
       let dependencyModules = [];
+      let dependencyLacking = [];
 
       // check for TypeError
       if (!Array.isArray(dependencies)) {
@@ -23,6 +24,9 @@
           if (dependency in libraryStorage) {
             dependencyModules.push(librarySystem(dependency));
           }
+          else {
+            dependencyLacking.push(dependency);
+          }
         });
       }
 
@@ -31,6 +35,9 @@
         libraryStorage[libraryName] = callback(...dependencyModules);
       }
       else {
+        dependencyLacking.forEach(function(value){
+          console.log(`%c${value} is missing!`, 'color:red');
+        });
         throw new Error(`Library not loaded, lacks dependencies.`);
       }
     
