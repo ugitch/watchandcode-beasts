@@ -11,8 +11,13 @@
     // recursive case
     if (arguments.length > 1) {
       let dependencyModules = [];
+
+      // check for TypeError
+      if (!Array.isArray(dependencies)) {
+        throw new TypeError(`${dependencies} is not an array.`);
+      }
       // check if any dependencies
-      if (dependencies.length > 0){
+      else if (dependencies.length > 0){
         // make dependencies available to callback,
         dependencies.forEach(function(dependency) {
           if (dependency in libraryStorage) {
@@ -25,10 +30,17 @@
       if (dependencies.length === dependencyModules.length) {
         libraryStorage[libraryName] = callback(...dependencyModules);
       }
+      else {
+        throw new Error(`Library not loaded, lacks dependencies.`);
+      }
     
     // base case
     // fetch library
     } else {
+      if (!(libraryName in libraryStorage)) {
+        throw new ReferenceError(`${libraryName} is not defined.`);
+      }
+
       return libraryStorage[libraryName];
     }
   }
