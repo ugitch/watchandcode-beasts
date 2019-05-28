@@ -9,8 +9,8 @@
   function librarySystem(libraryName, dependencies, callback) {
     // create library
     if (arguments.length > 1) {
-      let dependencyModules = [];
-      let dependencyLacking = [];
+      let availableDependencies = [];
+      let missingDependencies = [];
 
       if (!Array.isArray(dependencies)) {
         throw new TypeError(`${dependencies} is not an array.`);
@@ -19,19 +19,19 @@
         // arrange so dependencies are available to callback by their names
         dependencies.forEach(function(dependency) {
           if (dependency in libraryStorage) {
-            dependencyModules.push(librarySystem(dependency)); //recursive call
+            availableDependencies.push(librarySystem(dependency)); //recursive call
           }
           else {
-            dependencyLacking.push(dependency);
+            missingDependencies.push(dependency);
           }
         });
       }
 
-      if (dependencies.length === dependencyModules.length) {
-        libraryStorage[libraryName] = callback(...dependencyModules);
+      if (dependencies.length === availableDependencies.length) {
+        libraryStorage[libraryName] = callback(...availableDependencies);
       }
       else {
-        throw new Error(`Library not loaded, lacks ${dependencyLacking.length} dependencies: ${dependencyLacking}.`);
+        throw new Error(`Library not loaded, lacks ${missingDependencies.length} dependencies: ${missingDependencies}.`);
       }
     
     // fetch library
