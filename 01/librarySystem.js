@@ -8,6 +8,7 @@
   
   function librarySystem(libraryName, dependencies, callback) {
     // create library
+    // recursive case
     if (arguments.length > 1) {
       let dependencyModules = [];
       // check if any dependencies
@@ -15,7 +16,7 @@
         // make dependencies available to callback,
         dependencies.forEach(function(dependency) {
           if (dependency in libraryStorage) {
-            dependencyModules.push(libraryStorage[dependency]);
+            dependencyModules.push(librarySystem(dependency));
           }
         });
       }
@@ -24,7 +25,8 @@
       if (dependencies.length === dependencyModules.length) {
         libraryStorage[libraryName] = callback(...dependencyModules);
       }
-      
+    
+    // base case
     // fetch library
     } else {
       return libraryStorage[libraryName];
