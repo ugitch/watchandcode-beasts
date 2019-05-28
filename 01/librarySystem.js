@@ -13,13 +13,13 @@
       let dependencyModules = [];
       let dependencyLacking = [];
 
-      // check for TypeError
+      // if not an array, throw TypeError
       if (!Array.isArray(dependencies)) {
         throw new TypeError(`${dependencies} is not an array.`);
       }
       // check if any dependencies
       else if (dependencies.length > 0){
-        // make dependencies available to callback,
+        // arrange so dependencies are available to callback by their names
         dependencies.forEach(function(dependency) {
           if (dependency in libraryStorage) {
             dependencyModules.push(librarySystem(dependency));
@@ -34,6 +34,7 @@
       if (dependencies.length === dependencyModules.length) {
         libraryStorage[libraryName] = callback(...dependencyModules);
       }
+      // throw an error with information about missing dependencies
       else {
         throw new Error(`Library not loaded, lacks ${dependencyLacking.length} dependencies: ${dependencyLacking}.`);
       }
@@ -41,6 +42,7 @@
     // base case
     // fetch library
     } else {
+      // throw an error if no library found
       if (!(libraryName in libraryStorage)) {
         throw new ReferenceError(`${libraryName} is not defined.`);
       }
