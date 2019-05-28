@@ -35,10 +35,7 @@
         libraryStorage[libraryName] = callback(...dependencyModules);
       }
       else {
-        dependencyLacking.forEach(function(value){
-          console.log(`%c${value} is missing!`, 'color:red');
-        });
-        throw new Error(`Library not loaded, lacks dependencies.`);
+        throw new Error(`Library not loaded, lacks ${dependencyLacking.length} dependencies: ${dependencyLacking}.`);
       }
     
     // base case
