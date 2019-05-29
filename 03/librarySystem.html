@@ -69,7 +69,7 @@
       if (libraryName in libraryStorage && typeof libraryStorage[libraryName] !== 'function') {
         return libraryStorage[libraryName];
       }
-      else {
+      else if (!(libraryName in libraryStorage)){
         throw new ReferenceError(`${libraryName} is not defined.`);
       }
     }
