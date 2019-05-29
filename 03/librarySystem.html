@@ -32,13 +32,21 @@
   function librarySystem(libraryName, dependencies, callback) {
     if (arguments.length > 1) {
       let availableDependencies = [];
+      let missingDependencies = [];
    
       function checkDependencies() {
-        if (dependencies.length > 0) {
+        if (!Array.isArray(dependencies)) {
+          throw new TypeError(`${dependencies} is not an array.`);
+        }
+        else if (dependencies.length > 0) {
           availableDependencies.length = 0;
+          missingDependencies.length = 0;
           dependencies.forEach(function(dependency) {
             if (dependency in libraryStorage && typeof libraryStorage[dependency] !== 'function') {
               availableDependencies.push(libraryStorage[dependency]);
+            }
+            else {
+              missingDependencies.push(dependency);
             }
           });
         }
@@ -46,6 +54,7 @@
           libraryStorage[libraryName] = callback(...availableDependencies);
         }
         else {
+          console.log(`%cLibrary is loaded, but currently lacks ${missingDependencies.length} dependencies: ${missingDependencies}.`, 'color: red');
           libraryStorage[libraryName] = checkDependencies;
         }
       }
@@ -59,6 +68,9 @@
 
       if (libraryName in libraryStorage && typeof libraryStorage[libraryName] !== 'function') {
         return libraryStorage[libraryName];
+      }
+      else {
+        throw new ReferenceError(`${libraryName} is not defined.`);
       }
     }
   }
