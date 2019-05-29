@@ -45,9 +45,12 @@
         if (dependencies.length === availableDependencies.length) {
           libraryStorage[libraryName] = callback(...availableDependencies);
         }
+        else {
+          libraryStorage[libraryName] = checkDependencies;
+        }
       }
 
-      libraryStorage[libraryName] = checkDependencies;
+      checkDependencies();
     } 
     else {
       if (typeof libraryStorage[libraryName] === 'function') {
