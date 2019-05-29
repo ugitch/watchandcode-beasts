@@ -1,0 +1,75 @@
+<script src="../simpletest.js"></script>
+<script>
+
+// Prototype implementation
+
+
+// Function signature
+
+
+// Function parameters
+
+
+// Callback parameters
+
+
+// Return value
+
+  
+// Function description
+  
+
+// Requirements
+  // Loading libraries out of order.
+  // Callback function for each library is run only once.
+
+
+// Function implementation
+(function(root, undefined) {
+  'use strict';
+  const libraryStorage = {};
+  
+  function librarySystem(libraryName, dependencies, callback) {
+    if (arguments.length > 1) {
+      let availableDependencies = [];
+   
+      function checkDependencies() {
+        if (dependencies.length > 0) {
+          availableDependencies.length = 0;
+          dependencies.forEach(function(dependency) {
+            if (dependency in libraryStorage && typeof libraryStorage[dependency] !== 'function') {
+              availableDependencies.push(libraryStorage[dependency]);
+            }
+          });
+        }
+        if (dependencies.length === availableDependencies.length) {
+          libraryStorage[libraryName] = callback(...availableDependencies);
+        }
+      }
+
+      libraryStorage[libraryName] = checkDependencies;
+    } 
+    else {
+      if (typeof libraryStorage[libraryName] === 'function') {
+        libraryStorage[libraryName]();
+      }
+
+      if (libraryName in libraryStorage && typeof libraryStorage[libraryName] !== 'function') {
+        return libraryStorage[libraryName];
+      }
+    }
+  }
+
+
+  root['librarySystem'] = librarySystem;
+
+})(this);
+
+// Tests:
+tests({
+  '': function() {
+  }
+
+});
+
+</script>
