@@ -19,7 +19,7 @@
         // arrange so dependencies are available to callback by their names
         dependencies.forEach(function(dependency) {
           if (dependency in libraryStorage) {
-            availableDependencies.push(librarySystem(dependency)); //recursive call
+            availableDependencies.push(libraryStorage[dependency]);
           }
           else {
             missingDependencies.push(dependency);
