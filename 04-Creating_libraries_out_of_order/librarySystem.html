@@ -2,24 +2,38 @@
 <script>
 
 // Prototype implementation
-
+  
 
 // Function signature
-
+  // librarySystem(libraryName[, dependencies, callback])
 
 // Function parameters
-
+  // libraryName
+  // dependencies array - optional
+  // callback - optional (not optional if dependencies array is present)
 
 // Callback parameters
-
+  // elements of dependencies array
 
 // Return value
-
+  // library object
   
 // Function description
-  
+  // creates a library (called with three arguments)
+   // or
+  // returns a library if loaded in libraryStorage (called with one argument)
 
 // Requirements
+  // librarySystem should accept dependencies array.
+  // library cannot work without listed dependencies loaded in libraryStorage.
+  // dependencies(libraries) can be loaded out of order.
+  // library cannot be loaded unless dependencies are present.
+  
+  // librarySystem should accept callback.
+  // callback should return library.
+  // callback should run only once.
+
+  // librarySystem called with one argument 'libraryName' should return that library.
 
 // Function implementation
 (function(root, undefined) {
@@ -34,7 +48,8 @@
       if (!Array.isArray(dependencies)) {
         throw new TypeError(`${dependencies} is not an array.`);
       }
-   
+
+      // this function has closure on arguments for the library in question
       function checkDependencies() {
         if (dependencies.length > 0) {
           availableDependencies.length = 0;
@@ -79,7 +94,12 @@
 })(this);
 
 tests({
-  '': function() {}
+  '': function() {},
+  '': function() {},
+  '': function() {},
+  '': function() {},
+  '': function() {},
+  '': function() {},
 });
 
 </script>
