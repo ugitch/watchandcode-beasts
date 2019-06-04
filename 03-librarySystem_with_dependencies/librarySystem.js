@@ -31,7 +31,9 @@
         libraryStorage[libraryName] = callback(...availableDependencies);
       }
       else {
-        throw new Error(`Library not loaded, lacks ${missingDependencies.length} dependencies: ${missingDependencies}.`);
+        throw new Error(`Library not loaded, lacks ${missingDependencies.length} dependencies: ${missingDependencies.reduce((accum, dep) =>
+                (accum + ', ' + dep))
+          }.`);
       }
     
     // fetch library
