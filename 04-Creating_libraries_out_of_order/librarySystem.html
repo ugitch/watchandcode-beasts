@@ -1,9 +1,6 @@
 <script src="../simpletest.js"></script>
 <script>
 
-// Prototype implementation
-  
-
 // Function signature
   // librarySystem(libraryName[, dependencies, callback])
 
@@ -24,80 +21,255 @@
   // returns a library if loaded in libraryStorage (called with one argument)
 
 // Requirements
-  // If called with three arguments, it should load the library.
-  // Callback should accept dependencies.
+  // 3 arguments
+    // If dependencies.length === 0, it should run the callback.
+    // If dependencies' libraries are created, it should run the callback.
+    // Callback should have access to dependencies.
+    // If some dependencies missing, callback is not run.
+    // If some dependencies missing, libraryName is reserved.
 
-  // If called with one argument, it should return library.
-  
-  // If dependencies not created, it should postpone callback.
-    // If called with one argument and callback is not ran yet, it should run the callback.
+  // 1 argument
+    // If library is created, it should return library.
+    // If no library created and reserved libraryName, it should recurse with 3 arguments.
+
   // Callback should run only once.
-
   // If dependencies is not an array, throw TypeError.
-  // If called with one argument and dependencies not loaded, throw ReferenceError.
+  // If no library, throw ReferenceError.
+  // If missing dependencies, throw ReferenceError.
 
 // Function implementation
 (function(root, undefined) {
   'use strict';
-  const libraryStorage = {};
+  let libraryStorage = {};
+
+  // utility for cleaner testing
+  function resetLibrarySystem() {
+    libraryStorage = {};
+  }
   
   function librarySystem(libraryName, dependencies, callback) {
     // create library
     if (arguments.length === 3) {
       let availableDependencies = [];
-      let missingDependencies = [];
 
-      dependencies.forEach(function(dependency) {
-        if (dependency in libraryStorage) {
-          availableDependencies.push(libraryStorage[dependency]);
-        }
-        else {
-          missingDependencies.push(dependency);
-        }
-      });
+      if (!Array.isArray(dependencies)) {
+        throw new TypeError(`${dependencies} is not an array.`);
+      }
+      else if (dependencies.length > 0) {
+        dependencies.forEach(function(dependency) {
+          if (dependency in libraryStorage && 'library' in libraryStorage[dependency]) {
+              availableDependencies.push(libraryStorage[dependency].library);
+          }
+        });
+      }
 
       if (dependencies.length === availableDependencies.length) {
-        libraryStorage[libraryName] = callback(...availableDependencies);  
+        libraryStorage[libraryName] = {
+          dependencies: dependencies,
+          library: callback(...availableDependencies),
+        };  
+      }
+      // reserve libraryName and postpone callback
+      else {
+        libraryStorage[libraryName] = {
+          dependencies: dependencies,
+          callback: callback,
+        };
       }
       
     }
     // fetch library
     else if(arguments.length === 1) {
-      return libraryStorage[libraryName];
+      if (libraryName in libraryStorage && !('library' in libraryStorage[libraryName])) {
+        // recursive call to create library
+        librarySystem(libraryName, libraryStorage[libraryName].dependencies, libraryStorage[libraryName].callback);
+      }
+
+      if (libraryName in libraryStorage) {
+        if ('library' in libraryStorage[libraryName]) {
+          return libraryStorage[libraryName].library;
+        }
+        else {
+          throw new ReferenceError(`${libraryName} only reserved, not defined.`);
+        }
+      }
+      else {
+        throw new ReferenceError(`${libraryName} is not defined.`);
+      }
     }
 
   }
 
   root['librarySystem'] = librarySystem;
+  root['resetLibrarySystem'] = resetLibrarySystem;
 
 })(this);
 
 tests({
-  'If called with three arguments, it should load the library.': function() {
-    librarySystem('dependency', [], function() {
-      return 'loaded dependency';
+    'If dependencies.length === 0, it should run the callback.': function() {
+    resetLibrarySystem();
+    let numberOfTimesCallbackHasRun = 0;
+
+    librarySystem('name', [], function() {
+      numberOfTimesCallbackHasRun++;
+      return 'Gordon';
     });
-    eq(librarySystem('dependency'), 'loaded dependency');
+    eq(numberOfTimesCallbackHasRun, 1);
   },
-  'Callback should accept dependencies.': function() {
-    librarySystem('app', ['dependency'], function(dependency) {
-      return 'app with ' + dependency;
+  'If dependencies\' libraries are created, it should run the callback.': function() {
+    resetLibrarySystem();
+    let numberOfTimesCallbackHasRun = 0;
+
+    librarySystem('name', [], function() {
+      return 'Gordon';
     });
-    eq(librarySystem('app'), 'app with loaded dependency')
+
+    librarySystem('company', [], function() {
+      return 'Watch and Code';
+    });
+
+    librarySystem('workBlurb', ['name', 'company'], function(name, company) {
+      numberOfTimesCallbackHasRun++;
+      return name + ' works at ' + company;
+    });
+
+    eq(numberOfTimesCallbackHasRun, 1);
+  },
+  'Callback should have access to dependencies.': function(){
+    resetLibrarySystem();
+
+    librarySystem('name', [], function() {
+      return 'Gordon';
+    });
+
+    librarySystem('company', [], function() {
+      return 'Watch and Code';
+    });
+
+    librarySystem('workBlurb', ['name', 'company'], function(name, company) {
+      return name + ' works at ' + company;
+    });
+
+    eq(librarySystem('workBlurb'), 'Gordon works at Watch and Code');
+  },
+  'If some dependencies missing, callback is not run.': function() {
+    resetLibrarySystem();
+    let numberOfTimesCallbackHasRun = 0;
+
+    librarySystem('name', [], function() {
+      return 'Gordon';
+    });
+
+    librarySystem('workBlurb', ['name', 'company'], function(name, company) {
+      numberOfTimesCallbackHasRun++;
+      return name + ' works at ' + company;
+    });
+
+    eq(numberOfTimesCallbackHasRun, 0);
+  },
+  'If some dependencies missing, libraryName is reserved.': function() {
+    resetLibrarySystem();
+
+    librarySystem('name', [], function() {
+      return 'Gordon';
+    });
+
+    librarySystem('workBlurb', ['name', 'company'], function(name, company) {
+      numberOfTimesCallbackHasRun++;
+      return name + ' works at ' + company;
+    });
   },
 
-  'If called with one argument, it should return library.': function() {
-    eq(librarySystem('dependency'), 'loaded dependency');
+  'If library is created, it should return library.': function() {
+    resetLibrarySystem();
+
+    librarySystem('name', [], function() {
+      return 'Gordon';
+    });
+
+    eq(librarySystem('name'), 'Gordon');
+  },
+  'If no library created and reserved libraryName, it should recurse with 3 arguments.': function() {
+    resetLibrarySystem();
+
+    librarySystem('name', [], function() {
+      return 'Gordon';
+    });
+
+    librarySystem('workBlurb', ['name', 'company'], function(name, company) {
+      return name + ' works at ' + company;
+    });
+
+    librarySystem('company', [], function() {
+      return 'Watch and Code';
+    });
+
+    eq(librarySystem('workBlurb'), 'Gordon works at Watch and Code');
   },
 
-  'If dependencies not created, it should postpone callback.': function() {
-    librarySystem('wrap', ['storage', 'dependency'], function(storage, dependency) {
-      return 'wrap ' + storage + ' and ' + dependency;
+  'Callback should run only once.': function() {
+    resetLibrarySystem();
+    let numberOfTimesCallbackHasRun = 0;
+
+    librarySystem('name', [], function() {
+      return 'Gordon';
     });
-    eq(librarySystem('wrap'), undefined);
+
+    librarySystem('workBlurb', ['name', 'company'], function(name, company) {
+      numberOfTimesCallbackHasRun++;
+      return name + ' works at ' + company;
+    });
+
+    librarySystem('company', [], function() {
+      return 'Watch and Code';
+    });
+
+    librarySystem('workBlurb');
+    librarySystem('workBlurb');
+    librarySystem('workBlurb');
+
+    eq(numberOfTimesCallbackHasRun, 1);
   },
-  '': function() {},
-  '': function() {},
+  'If dependencies is not an array, throw TypeError.': function() {
+    resetLibrarySystem();
+    let isTypeError = false;
+
+    try {
+      librarySystem('name', 3, function() {
+        return 'Gordon';
+      });
+    } catch(e) {
+      isTypeError = e instanceof TypeError;
+      eq(isTypeError, true);
+    }
+
+  },
+  'If no library, throw ReferenceError.': function() {
+    resetLibrarySystem();
+    let isReferenceError = false;
+
+    try {
+      librarySystem('whyLive');
+    } catch(e) {
+      isReferenceError = e instanceof ReferenceError;
+      eq(isReferenceError, true);
+    }
+  },
+  'If missing dependencies, throw ReferenceError.': function() {
+    resetLibrarySystem();
+    let isReferenceError = false;
+
+    librarySystem('whyLive', ['heaven'], function(heaven) {
+      return 'cause you live in ' + heaven;
+    });
+
+    try {
+      librarySystem('whyLive');
+    } catch(e) {
+      isReferenceError = e instanceof ReferenceError;
+      eq(isReferenceError, true);
+    }
+  }
 });
 
 </script>
