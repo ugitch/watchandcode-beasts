@@ -24,37 +24,78 @@
   // returns a library if loaded in libraryStorage (called with one argument)
 
 // Requirements
-  // If called with three arguments, it should create library.
-  // It should accept dependencies.
-  // If dependencies, it should accept callback.
-  // If dependencies not loaded, it should postpone callback.
+  // If called with three arguments, it should load the library.
+  // Callback should accept dependencies.
 
   // If called with one argument, it should return library.
-
-  // Callback should accept dependencies.
-  // Callback should return library.
+  
+  // If dependencies not created, it should postpone callback.
+    // If called with one argument and callback is not ran yet, it should run the callback.
   // Callback should run only once.
 
   // If dependencies is not an array, throw TypeError.
   // If called with one argument and dependencies not loaded, throw ReferenceError.
-
 
 // Function implementation
 (function(root, undefined) {
   'use strict';
   const libraryStorage = {};
   
-  function librarySystem(libraryName, dependencies, callback) {}
+  function librarySystem(libraryName, dependencies, callback) {
+    // create library
+    if (arguments.length === 3) {
+      let availableDependencies = [];
+      let missingDependencies = [];
+
+      dependencies.forEach(function(dependency) {
+        if (dependency in libraryStorage) {
+          availableDependencies.push(libraryStorage[dependency]);
+        }
+        else {
+          missingDependencies.push(dependency);
+        }
+      });
+
+      if (dependencies.length === availableDependencies.length) {
+        libraryStorage[libraryName] = callback(...availableDependencies);  
+      }
+      
+    }
+    // fetch library
+    else if(arguments.length === 1) {
+      return libraryStorage[libraryName];
+    }
+
+  }
 
   root['librarySystem'] = librarySystem;
 
 })(this);
 
 tests({
-  '': function() {},
-  '': function() {},
-  '': function() {},
-  '': function() {},
+  'If called with three arguments, it should load the library.': function() {
+    librarySystem('dependency', [], function() {
+      return 'loaded dependency';
+    });
+    eq(librarySystem('dependency'), 'loaded dependency');
+  },
+  'Callback should accept dependencies.': function() {
+    librarySystem('app', ['dependency'], function(dependency) {
+      return 'app with ' + dependency;
+    });
+    eq(librarySystem('app'), 'app with loaded dependency')
+  },
+
+  'If called with one argument, it should return library.': function() {
+    eq(librarySystem('dependency'), 'loaded dependency');
+  },
+
+  'If dependencies not created, it should postpone callback.': function() {
+    librarySystem('wrap', ['storage', 'dependency'], function(storage, dependency) {
+      return 'wrap ' + storage + ' and ' + dependency;
+    });
+    eq(librarySystem('wrap'), undefined);
+  },
   '': function() {},
   '': function() {},
 });
