@@ -24,70 +24,27 @@
   // returns a library if loaded in libraryStorage (called with one argument)
 
 // Requirements
-  // librarySystem should accept dependencies array.
-  // library cannot work without listed dependencies loaded in libraryStorage.
-  // dependencies(libraries) can be loaded out of order.
-  // library cannot be loaded unless dependencies are present.
-  
-  // librarySystem should accept callback.
-  // callback should return library.
-  // callback should run only once.
+  // If called with three arguments, it should create library.
+  // It should accept dependencies.
+  // If dependencies, it should accept callback.
+  // If dependencies not loaded, it should postpone callback.
 
-  // librarySystem called with one argument 'libraryName' should return that library.
+  // If called with one argument, it should return library.
+
+  // Callback should accept dependencies.
+  // Callback should return library.
+  // Callback should run only once.
+
+  // If dependencies is not an array, throw TypeError.
+  // If called with one argument and dependencies not loaded, throw ReferenceError.
+
 
 // Function implementation
 (function(root, undefined) {
   'use strict';
   const libraryStorage = {};
   
-  function librarySystem(libraryName, dependencies, callback) {
-    if (arguments.length > 1) {
-      let availableDependencies = [];
-      let missingDependencies = [];
-
-      if (!Array.isArray(dependencies)) {
-        throw new TypeError(`${dependencies} is not an array.`);
-      }
-
-      // this function has closure on arguments for the library in question
-      function checkDependencies() {
-        if (dependencies.length > 0) {
-          availableDependencies.length = 0;
-          missingDependencies.length = 0;
-          dependencies.forEach(function(dependency) {
-            if (dependency in libraryStorage && typeof libraryStorage[dependency] !== 'function') {
-              availableDependencies.push(libraryStorage[dependency]);
-            }
-            else {
-              missingDependencies.push(dependency);
-            }
-          });
-        }
-
-        if (dependencies.length === availableDependencies.length) {
-          libraryStorage[libraryName] = callback(...availableDependencies);
-        }
-        else {
-          console.log(`%cLibrary is loaded, but currently lacks ${missingDependencies.length} dependencies: ${missingDependencies}.`, 'color: red');
-          libraryStorage[libraryName] = checkDependencies;
-        }
-      }
-
-      checkDependencies();
-    } 
-    else {
-      if (typeof libraryStorage[libraryName] === 'function') {
-        libraryStorage[libraryName]();
-      }
-
-      if (libraryName in libraryStorage && typeof libraryStorage[libraryName] !== 'function') {
-        return libraryStorage[libraryName];
-      }
-      else if (!(libraryName in libraryStorage)){
-        throw new ReferenceError(`${libraryName} is not defined.`);
-      }
-    }
-  }
+  function librarySystem(libraryName, dependencies, callback) {}
 
   root['librarySystem'] = librarySystem;
 
