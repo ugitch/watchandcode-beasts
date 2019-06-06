@@ -31,7 +31,7 @@
         libraryStorage[libraryName] = callback(...availableDependencies);
       }
       else {
-        throw new ReferenceError(`Library not created, lacks ${missingDependencies.length} dependencies: ${missingDependencies.reduce((accum, dep) =>
+        throw new Error(`Library not created, lacks ${missingDependencies.length} dependencies: ${missingDependencies.reduce((accum, dep) =>
                 (accum + ', ' + dep))
           }.`);
       }
