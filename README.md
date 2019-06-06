@@ -1,6 +1,6 @@
 # The beasts of Watch and Code
 
-Each solution should adhere to [Airbnb's style guide](https://github.com/airbnb/javascript), unless there's already a pre-existing style.
+Each solution should adhere to [Airbnb's style guide](https://github.com/airbnb/javascript/tree/es5-deprecated/es5), unless there's already a pre-existing style.
 
 ## 1. [Improving `runWithDebugger`](https://github.com/ugitch/watchandcode-beasts/tree/master/01/runWithDebugger.js)
 
