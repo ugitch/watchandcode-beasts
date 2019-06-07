@@ -1,0 +1,105 @@
+<script src="../simpletest.js"></script>
+<script>
+
+// Function signature
+  // isPrototypeOf(prototypeObject, object)
+
+// Function parameters
+  // prototypeObject - the object for which is searched for within the prototype of 'object'
+  // object - the object whose prototype chain will be searched.
+
+// Return value
+  // boolean
+
+// Function description
+  // isPrototypeOf() checks whether or not an 'prototypeObject' exists within object's prototype chain
+  
+// Requirements
+  // If prototypeObject is within object prototype chain, return true.
+  // If prototypeObject is Object.prototype and object has prototype chain, return true.
+
+  // If prototypeObject is not within object prototype chain, return false.
+  // If object has no prototype chain, return false.
+
+  // If prototypeObject is undefined, throw TypeError.
+  // If prototypeObject is null, throw TypeError.
+
+// Function implementation
+function isPrototypeOf(prototypeObject, object) {
+  let currentDirectPrototype = Object.getPrototypeOf(object);
+  // take into account objects without prototype chain
+  if (currentDirectPrototype === null) {
+    return false;
+  }
+  else if (prototypeObject === Object.prototype) {
+    return true;
+  }
+
+  while (currentDirectPrototype !== Object.prototype) {
+    if (currentDirectPrototype === prototypeObject) {
+      return true;
+    }
+    currentDirectPrototype = Object.getPrototypeOf(currentDirectPrototype);
+  }
+
+  return false;
+}
+
+// code for testing
+var canine = {
+  bark: function() {
+    console.log('bark');
+  }
+};
+
+var dog = Object.create(canine);
+dog.fetch = function() {
+  console.log('fetch');
+};
+
+var randomObject = {};
+
+var myDog = Object.create(dog);
+var empty = Object.create(null);
+
+tests({
+  'If prototypeObject is within object prototype chain, return true.': function() {
+    eq(isPrototypeOf(dog, myDog), true);
+    eq(isPrototypeOf(canine, myDog), true);
+  },
+  'If prototypeObject is Object.prototype and object has prototype chain, return true.': function() {
+    eq(isPrototypeOf(Object.prototype, myDog), true);
+  },
+
+  'If prototypeObject is not within object prototype chain, return false.': function() {
+    eq(isPrototypeOf(dog, randomObject), false);  
+  },
+  'If object has no prototype chain, return false.': function() {
+    eq(isPrototypeOf(dog, empty), false);
+  },
+
+  'If prototypeObject is undefined, throw TypeError.': function() {
+    let isTypeError = false;
+    
+    try {
+      isPrototypeOf(undefined, myDog);
+    }
+    catch(e) {
+      isTypeError = e instanceof TypeError;
+      eq(isTypeError, true);
+    }
+  },
+  'If prototypeObject is null, throw TypeError.': function() {
+    let isTypeError = false;
+    
+    try {
+      isPrototypeOf(null, myDog);
+    }
+    catch(e) {
+      isTypeError = e instanceof TypeError;
+      eq(isTypeError, true);
+    }
+  }
+});
+
+</script>
