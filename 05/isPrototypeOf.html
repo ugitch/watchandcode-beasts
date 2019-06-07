@@ -23,9 +23,15 @@
 
   // If prototypeObject is undefined, throw TypeError.
   // If prototypeObject is null, throw TypeError.
+  // If object is null, return false.
+  // If object is undefined, return false.
 
 // Function implementation
 function isPrototypeOf(prototypeObject, object) {
+  if (object === null || object === undefined) {
+    return false;
+  }
+
   let currentDirectPrototype = Object.getPrototypeOf(object);
   // take into account objects without prototype chain
   if (currentDirectPrototype === null) {
@@ -99,7 +105,13 @@ tests({
       isTypeError = e instanceof TypeError;
       eq(isTypeError, true);
     }
-  }
+  },
+  'If object is null, return false.': function() {
+    eq(isPrototypeOf(canine, null), false);
+  },
+  'If object is undefined, return false': function() {
+    eq(isPrototypeOf(canine, undefined), false);
+  },
 });
 
 </script>
