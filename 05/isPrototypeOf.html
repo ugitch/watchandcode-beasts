@@ -33,15 +33,13 @@ function isPrototypeOf(prototypeObject, object) {
   }
 
   let currentDirectPrototype = Object.getPrototypeOf(object);
+
   // take into account objects without prototype chain
   if (currentDirectPrototype === null) {
     return false;
   }
-  else if (prototypeObject === Object.prototype) {
-    return true;
-  }
 
-  while (currentDirectPrototype !== Object.prototype) {
+  while (currentDirectPrototype !== null) {
     if (currentDirectPrototype === prototypeObject) {
       return true;
     }
