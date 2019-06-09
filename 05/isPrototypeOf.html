@@ -28,6 +28,10 @@
 
 // Function implementation
 function isPrototypeOf(prototypeObject, object) {
+  if (prototypeObject === undefined || prototypeObject === null) {
+    throw new TypeError('Cannot convert null or undefined to object');
+  }
+
   if (object === null || object === undefined) {
     return false;
   }
@@ -90,8 +94,8 @@ tests({
     }
     catch(e) {
       isTypeError = e instanceof TypeError;
-      eq(isTypeError, true);
     }
+    eq(isTypeError, true);
   },
   'If prototypeObject is null, throw TypeError.': function() {
     let isTypeError = false;
@@ -101,8 +105,9 @@ tests({
     }
     catch(e) {
       isTypeError = e instanceof TypeError;
-      eq(isTypeError, true);
     }
+    eq(isTypeError, true);
+
   },
   'If object is null, return false.': function() {
     eq(isPrototypeOf(canine, null), false);
