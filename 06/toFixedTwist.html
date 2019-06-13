@@ -28,7 +28,8 @@ function toFixed(value, precision=0) {
   }
 
   // insert back the decimal point
-  numberAsString = roundedShiftedNumberAsString.slice(0, decimalPointIndex) +               '.' + roundedShiftedNumberAsString.slice(decimalPointIndex);
+  numberAsString = roundedShiftedNumberAsString.slice(0, decimalPointIndex) +
+                   '.' + roundedShiftedNumberAsString.slice(decimalPointIndex);
 
   return Number(numberAsString).toFixed(precision);
 }
