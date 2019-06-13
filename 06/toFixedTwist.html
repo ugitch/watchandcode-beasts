@@ -11,7 +11,7 @@ function toFixed(value, precision=0) {
   }
 
   var shiftedNumberAsString = numberAsString.slice(0, decimalPointIndex) +
-                    numberAsString.slice(decimalPointIndex + 1, decimalPointIndex + 1 + precision);
+                              numberAsString.slice(decimalPointIndex + 1, decimalPointIndex + 1 + precision);
 
   // if decimal point needs to be added, add it
   // numberAsString has '.' while shiftedNumberAsString still hasn't
@@ -28,7 +28,7 @@ function toFixed(value, precision=0) {
   }
 
   // insert back the decimal point
-  numberAsString = roundedShiftedNumberAsString.slice(0, decimalPointIndex) + '.' + roundedShiftedNumberAsString.slice(decimalPointIndex);
+  numberAsString = roundedShiftedNumberAsString.slice(0, decimalPointIndex) +               '.' + roundedShiftedNumberAsString.slice(decimalPointIndex);
 
   return Number(numberAsString).toFixed(precision);
 }
