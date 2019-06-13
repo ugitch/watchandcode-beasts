@@ -1,0 +1,48 @@
+<script src="../simpletest.js"></script>
+<script>
+
+function toFixed(value, precision=0) {
+  var numberAsString = String(value);
+  var beginsWithZero = numberAsString.indexOf('0') === 0;
+  var decimalPointIndex = numberAsString.indexOf('.');
+
+  if (decimalPointIndex === -1) {
+    return value.toFixed(precision);
+  }
+
+  var shiftedNumberAsString = numberAsString.slice(0, decimalPointIndex) +
+                    numberAsString.slice(decimalPointIndex + 1, decimalPointIndex + 1 + precision);
+
+  // if decimal point needs to be added, add it
+  // numberAsString has '.' while shiftedNumberAsString still hasn't
+  if (shiftedNumberAsString.length + 1 < numberAsString.length) {
+    shiftedNumberAsString += '.' + numberAsString.slice(shiftedNumberAsString.length + 1)
+  }
+  
+  var roundedShiftedNumber = Math.round(Number(shiftedNumberAsString));
+
+  var roundedShiftedNumberAsString = String(roundedShiftedNumber);
+
+  if (beginsWithZero) {
+    roundedShiftedNumberAsString = '0' + roundedShiftedNumberAsString;
+  }
+
+  // insert back the decimal point
+  numberAsString = roundedShiftedNumberAsString.slice(0, decimalPointIndex) + '.' + roundedShiftedNumberAsString.slice(decimalPointIndex);
+
+  return Number(numberAsString).toFixed(precision);
+}
+  
+tests({
+  'It should round 0.615 to 0.62.': function() {
+    eq(toFixed(0.615, 2), '0.62');
+  },
+  'It should round 10.235 to 10.24.': function() {
+    eq(toFixed(10.235, 2), '10.24');
+  },
+  'It should round 1.005 to 1.01.': function() {
+    eq(toFixed(1.005, 2), '1.01');
+  }
+});
+
+</script>

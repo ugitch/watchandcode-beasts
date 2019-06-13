@@ -10,8 +10,8 @@ Each solution should adhere to [Airbnb's style guide](https://github.com/airbnb/
 
 ## 4. [Creating libraries out of order](https://github.com/ugitch/watchandcode-beasts/tree/master/04/librarySystemOutOfOrder.html)
 
-## 5. [`isPrototypeOf`](https://github.com/ugitch/watchandcode-beasts/blob/master/05/isPrototypeOf.html)
+## 5. [`isPrototypeOf`](https://github.com/ugitch/watchandcode-beasts/tree/master/05/isPrototypeOf.html)
 
-## 6. [A twist on `accounting.toFixed`]()
+## 6. [A twist on `accounting.toFixed`](https://github.com/ugitch/watchandcode-beasts/tree/master/06/toFixedTwist.html)
 
 ## 7. [Nested todos]()
